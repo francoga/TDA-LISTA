@@ -160,13 +160,18 @@ bool lista_iter_avanzar(lista_iter_t* iter) {
 	return true;
 }
 
+void* lista_iter_ver_actual(const lista_iter_t* iter) {
+	if(lista_esta_vacia(iter->lista) || lista_iter_al_final(iter)) return NULL;
+	return iter->actual->dato;
+}
+
 void lista_iter_destruir(lista_iter_t* iter) {
 	free(iter);
 }
 
 bool lista_iter_insertar(lista_iter_t *iter, void *dato) {
-	
-	if(lista_esta_vacia(iter->lista)) {
+	/*Si la lista esta vacia o cuando actual es el primero de la lista*/
+	if(iter->actual == iter->lista->primero) {
 		lista_insertar_primero(iter->lista, dato);
 		iter->actual= iter->lista->primero;
 	}else if(lista_iter_al_final(iter)) {
@@ -202,8 +207,8 @@ void *lista_iter_borrar(lista_iter_t *iter) {
 		iter->anterior->prox= borrar->prox;
 		iter->actual= borrar->prox;
 	}
-	free(borrar);
 	iter->lista->cantidad--;
+	free(borrar);
 	return dato;
 }
 
@@ -221,7 +226,3 @@ void *lista_iter_borrar(lista_iter_t *iter) {
 		 actual= actual->prox;
 	 }
  }
-
-
- 
- 
