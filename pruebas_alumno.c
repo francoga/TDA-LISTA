@@ -6,6 +6,20 @@
 #include <stdlib.h>
 
 
+/* ******************************************************************
+ *                   FUNCIONES AUXILIARES
+ * *****************************************************************/
+
+bool imprimir_letras(void *elemento, void *extra) {
+    printf("%c, ", *(char*)elemento);
+    return true; // seguir iterando
+}
+
+bool sumar_todos_los_numeros(void* elemento, void* extra) {
+	*(int*) extra += *(int*) elemento;
+	return true;
+}
+
 void pila_destruir_wrapper(void* elemento) {
 	pila_destruir((pila_t*)elemento);
 }
@@ -472,6 +486,70 @@ void prueba_iterador_volumen(int largo){
 	printf("\n");
 }
 
+void prueba_iterador_interno() {
+	printf("\t\tINICIO DE PRUEBAS ITERADOR INTERNO\n");
+	/* Declaro variables a usar*/
+	lista_t* lista= lista_crear();
+	char abecedario[]= {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
+	bool ok= true;
+	
+	/*Inicio de pruebas*/
+	print_test("La lista se creo correctamente", lista != NULL);
+	print_test("La lista esta vacia", lista_esta_vacia(lista));
+	
+	for(int i= 0; i < 26; i++) {
+		ok &= lista_insertar_ultimo(lista, &abecedario[i]);
+	}
+	
+	print_test("Se insertaron los elementos correctamente", ok);
+	print_test("La lista no esta vacia", !lista_esta_vacia(lista));
+	print_test("El largo de la lista es 26", lista_largo(lista) == 26);
+	print_test("Ver primero", lista_ver_primero(lista) == &abecedario[0]);
+	print_test("Ver ultimo", lista_ver_ultimo(lista) == &abecedario[25]);
+	
+	/* Iterador interno*/
+	lista_iterar(lista, imprimir_letras, NULL);
+	print_test("\nEl iterador interno funciona correctamente", true);
+	
+	/* Destruyo la lista*/
+	lista_destruir(lista, NULL);
+	print_test("La lista se destruyo correctamente", true);
+	printf("\n");
+}
+
+void prueba_iterador_interno_2() {
+	printf("\t\tINICIO DE PRUEBAS ITERADOR INTERNO 2\n");
+	/* Declaro variables a usar*/
+	lista_t* lista= lista_crear();
+	int numeros[]= {1,2,3,4,5,6,7,8,9,10};
+	bool ok= true;
+	
+	/*Inicio de pruebas*/
+	print_test("La lista se creo correctamente", lista != NULL);
+	print_test("La lista esta vacia", lista_esta_vacia(lista));
+	
+	for(int i= 0; i < 10; i++) {
+		ok &= lista_insertar_ultimo(lista, &numeros[i]);
+	}
+	
+	print_test("Se insertaron los elementos correctamente", ok);
+	print_test("La lista no esta vacia", !lista_esta_vacia(lista));
+	print_test("El largo de la lista es 10", lista_largo(lista) == 10);
+	print_test("Ver primero", lista_ver_primero(lista) == &numeros[0]);
+	print_test("Ver ultimo", lista_ver_ultimo(lista) == &numeros[9]);
+	
+	/* Iterador interno*/
+	int suma= 0;
+	lista_iterar(lista, sumar_todos_los_numeros, &suma);
+	printf("La suma total es %d\n", suma);
+	print_test("El iterador interno funciona correctamente", true);
+	
+	/* Destruyo la lista*/
+	lista_destruir(lista, NULL);
+	print_test("La lista se destruyo correctamente", true);
+	printf("\n");
+}
+
 void pruebas_lista_alumno(void) {
 	prueba_lista_vacia();
 	prueba_lista_insertar_NULL();
@@ -486,4 +564,6 @@ void pruebas_lista_alumno(void) {
 	prueba_iterador_insertar_en_lista_vacia();
 	prueba_iterador_lista_con_elementos();
 	prueba_iterador_volumen(10000);
+	prueba_iterador_interno();
+	prueba_iterador_interno_2();
 }

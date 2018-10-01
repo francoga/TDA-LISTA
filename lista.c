@@ -221,7 +221,7 @@ void *lista_iter_borrar(lista_iter_t *iter) {
 	 
 	 nodo_t* actual= lista->primero;
 	 
-	 while(!actual) {
+	 while(actual != NULL) {
 		 if(!visitar(actual->dato, extra)) return;
 		 actual= actual->prox;
 	 }
