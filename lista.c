@@ -1,4 +1,5 @@
 #include "lista.h"
+#include <stdlib.h>
 
 /* Definición del struct nodo
  */
@@ -63,9 +64,8 @@ bool lista_insertar_primero(lista_t* lista, void* dato) {
 	
 	if(lista_esta_vacia(lista)) {
 		lista->ultimo= nodo_nuevo;
-	}else {
-		nodo_nuevo->prox= lista->primero;
 	}
+	nodo_nuevo->prox= lista->primero;
 	lista->primero= nodo_nuevo;
 	lista->cantidad++;
 	return true;
@@ -139,7 +139,7 @@ void lista_destruir(lista_t* lista, void destruir_dato(void*)) {
 lista_iter_t* lista_iter_crear(lista_t* lista) {
 	 lista_iter_t* lista_iter= malloc(sizeof(lista_iter_t));
 	 
-	 if(lista_iter == NULL || lista == NULL) return NULL;
+	 if(lista_iter == NULL) return NULL;
 	 
 	 lista_iter->actual= lista->primero;
 	 lista_iter->anterior= NULL;
@@ -148,12 +148,11 @@ lista_iter_t* lista_iter_crear(lista_t* lista) {
 }
 
 bool lista_iter_al_final(const lista_iter_t* iter) {
-	if(iter->actual == NULL) return true;
-	return false;
+	return iter->actual == NULL;
 }
 
 bool lista_iter_avanzar(lista_iter_t* iter) {
-	if(lista_iter_al_final(iter) || lista_esta_vacia(iter->lista)) return false;
+	if(lista_iter_al_final(iter)) return false;
 	
 	iter->anterior= iter->actual;
 	iter->actual= iter->actual->prox;
@@ -161,7 +160,7 @@ bool lista_iter_avanzar(lista_iter_t* iter) {
 }
 
 void* lista_iter_ver_actual(const lista_iter_t* iter) {
-	if(lista_esta_vacia(iter->lista) || lista_iter_al_final(iter)) return NULL;
+	if(lista_iter_al_final(iter)) return NULL;
 	return iter->actual->dato;
 }
 
@@ -172,10 +171,10 @@ void lista_iter_destruir(lista_iter_t* iter) {
 bool lista_iter_insertar(lista_iter_t *iter, void *dato) {
 	/*Si la lista esta vacia o cuando actual es el primero de la lista*/
 	if(iter->actual == iter->lista->primero) {
-		lista_insertar_primero(iter->lista, dato);
+		if(!lista_insertar_primero(iter->lista, dato)) return false;
 		iter->actual= iter->lista->primero;
 	}else if(lista_iter_al_final(iter)) {
-		lista_insertar_ultimo(iter->lista, dato);
+		if(!lista_insertar_ultimo(iter->lista, dato)) return false;
 		iter->actual= iter->lista->ultimo;
 	}else {
 		nodo_t* nodo_insertar= nodo_crear(dato);
